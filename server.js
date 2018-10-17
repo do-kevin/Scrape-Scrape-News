@@ -24,17 +24,11 @@ let databaseUri = "mongodb://localhost/scrape-scrape-news";
 
 if (process.env.MONGODB_URI) {
   mongoose.connect(
-    process.env.MONGODB_URI,
-    {
-      useNewUrlParser: true
-    }
+    process.env.MONGODB_URI
   );
 } else {
   mongoose.connect(
-    databaseUri,
-    {
-      useNewUrlParser: true
-    }
+    databaseUri
   );
 };
 
