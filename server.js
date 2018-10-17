@@ -42,6 +42,10 @@ db.once('open', function() {
     console.log('Mongoose connection successful');
 });
 
+app.get("/",function(req,res){
+    res.sendFile("index.html");
+});
+
 app.get(`/scrape`, function(req, res) {
   let scrapeUrl = `https://www.npr.org/`;
 
