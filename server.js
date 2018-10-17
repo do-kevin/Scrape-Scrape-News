@@ -4,7 +4,7 @@ var mongoose = require(`mongoose`);
 var axios = require(`axios`);
 var cheerio = require(`cheerio`);
 
-var db = require(`./models`);
+var models = require(`./models`);
 
 var PORT = 3000;
 
@@ -20,12 +20,33 @@ app.use(
 app.use(express.json());
 app.use(express.static(`public`));
 
-mongoose.connect(
-  `mongodb://localhost/scrape-scrape-news`,
-  {
-    useNewUrlParser: true
-  }
-);
+let databaseUri = "mongodb://localhost/scrape-scrape-news";
+
+if (process.env.MONGODB_URI) {
+  mongoose.connect(
+    process.env.MONGODB_URI,
+    {
+      useNewUrlParser: true
+    }
+  );
+} else {
+  mongoose.connect(
+    databaseUri,
+    {
+      useNewUrlParser: true
+    }
+  );
+};
+
+var db = mongoose.connection;
+
+db.on('error', function (err) {
+    console.log(`Mongoose Error: ${err}`);
+});
+
+db.once('open', function() {
+    console.log('Mongoose connection successful');
+});
 
 app.get(`/scrape`, function(req, res) {
   let scrapeUrl = `https://www.npr.org/`;
@@ -34,24 +55,24 @@ app.get(`/scrape`, function(req, res) {
     var $ = cheerio.load(response.data);
 
     $(`div.story-text`).each(function(i, element) {
-        //  console.log($(element).children('a').find("p.teaser").text());
+      //  console.log($(element).children('a').find("p.teaser").text());
       var result = {};
 
       result.title = $(element)
         .children(`a`)
-        .find('h3')
+        .find("h3")
         .text();
       result.summary = $(element)
-        .children('a')
+        .children("a")
         .find(`p.teaser`)
         .text();
       result.link = $(element)
         .children(`a`)
         .attr("href");
 
-        console.log(result);
+      console.log(result);
 
-      db.Article.create(result)
+      models.Article.create(result)
         .then(function(dbArticle) {
           console.log(dbArticle);
         })
@@ -65,7 +86,7 @@ app.get(`/scrape`, function(req, res) {
 });
 
 app.get(`/articles`, function(req, res) {
-  db.Article.find({})
+  models.Article.find({})
     .then(function(dbArticle) {
       res.json(dbArticle);
     })
@@ -75,7 +96,7 @@ app.get(`/articles`, function(req, res) {
 });
 
 app.get(`/articles/:id`, function(req, res) {
-  db.Article.findOne({
+  models.Article.findOne({
     _id: req.params.id
   })
     .populate(`note`)
@@ -88,7 +109,7 @@ app.get(`/articles/:id`, function(req, res) {
 });
 
 app.post(`/articles/:id`, function(req, res) {
-  db.Note.create(req.body)
+  models.Note.create(req.body)
     .then(function(dbNote) {
       return db.Article.findOneAndUpdate(
         {
