@@ -8,17 +8,16 @@ $(`#scrape-btn`).click(function () {
             for (let i = 0; i < data.length; i++) {
                 $(`#articles`)
                     .append(`<h2 data-id="${data[i]._id}">${data[i].title}</h2>`)
+                    .append(`<p>${data[i].summary}</p>`)
                     .append(`<a href="${data[i].link}">${data[i].link}</a><br>`);
-            }
+            };
         });
-    }).catch(function(err) {
-        console.log(err);
     });
 });
 
 
 
-$(document).on(`click`, `p`, function () {
+$(document).on(`click`, `h2`, function () {
 
     $(`#notes`).empty();
 

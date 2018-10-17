@@ -12,28 +12,44 @@ var app = express();
 
 app.use(logger(`dev`));
 
-app.use(express.urlencoded({ extended: true }));
+app.use(
+  express.urlencoded({
+    extended: true
+  })
+);
 app.use(express.json());
 app.use(express.static(`public`));
 
-mongoose.connect(`mongodb://localhost/scrape-scrape-news`, { useNewUrlParser: true });
+mongoose.connect(
+  `mongodb://localhost/scrape-scrape-news`,
+  {
+    useNewUrlParser: true
+  }
+);
 
 app.get(`/scrape`, function(req, res) {
+  let scrapeUrl = `https://www.npr.org/`;
 
-  axios.get(`http://www.echojs.com/`).then(function(response) {
-
+  axios.get(scrapeUrl).then(function(response) {
     var $ = cheerio.load(response.data);
 
-    $(`article h2`).each(function() {
-
+    $(`div.story-text`).each(function(i, element) {
+        //  console.log($(element).children('a').find("p.teaser").text());
       var result = {};
 
-      result.title = $(this)
+      result.title = $(element)
         .children(`a`)
+        .find('h3')
         .text();
-      result.link = $(this)
+      result.summary = $(element)
+        .children('a')
+        .find(`p.teaser`)
+        .text();
+      result.link = $(element)
         .children(`a`)
-        .attr(`href`);
+        .attr("href");
+
+        console.log(result);
 
       db.Article.create(result)
         .then(function(dbArticle) {
@@ -49,7 +65,6 @@ app.get(`/scrape`, function(req, res) {
 });
 
 app.get(`/articles`, function(req, res) {
-
   db.Article.find({})
     .then(function(dbArticle) {
       res.json(dbArticle);
@@ -60,7 +75,9 @@ app.get(`/articles`, function(req, res) {
 });
 
 app.get(`/articles/:id`, function(req, res) {
-  db.Article.findOne({ _id: req.params.id })
+  db.Article.findOne({
+    _id: req.params.id
+  })
     .populate(`note`)
     .then(function(dbArticle) {
       res.json(dbArticle);
@@ -73,7 +90,17 @@ app.get(`/articles/:id`, function(req, res) {
 app.post(`/articles/:id`, function(req, res) {
   db.Note.create(req.body)
     .then(function(dbNote) {
-      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+      return db.Article.findOneAndUpdate(
+        {
+          _id: req.params.id
+        },
+        {
+          note: dbNote._id
+        },
+        {
+          new: true
+        }
+      );
     })
     .then(function(dbArticle) {
       res.json(dbArticle);
