@@ -1,29 +1,27 @@
-const mongoose = require(`mongoose`);
+var mongoose = require(`mongoose`);
 
 var Schema = mongoose.Schema;
 
-var articleSchema = new Schema({
-    headline: {
+var ArticleSchema = new Schema({
+
+    title: {
         type: String,
         unique: true,
         required: true
     },
-    summary: {
-        type: String,
-        unique: true,
-        required: true
-    } ,
-    url: {
+
+    link: {
         type: String,
         unique: true,
         required: true
     },
+
     note: {
         type: Schema.Types.ObjectId,
         ref: `Note`
     }
-}); 
+});
 
-var article = mongoose.model(`Article`, articleSchema);
+var Article = mongoose.model(`Article`, ArticleSchema);
 
-module.exports = article;
+module.exports = Article;

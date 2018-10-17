@@ -1,93 +1,89 @@
-const express = require(`express`);
-const logger = require(`morgan`);
-const mongoose = require(`mongoose`);
-const axios = require(`axios`);
-const cheerio = require(`cheerio`);
+var express = require(`express`);
+var logger = require(`morgan`);
+var mongoose = require(`mongoose`);
+var axios = require(`axios`);
+var cheerio = require(`cheerio`);
 
-var PORT = process.env.PORT || 3000;
+var db = require(`./models`);
 
-const db = require(`./models`);
+var PORT = 3000;
 
 var app = express();
 
 app.use(logger(`dev`));
+
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static(`public`));
 
-const exphbs = require(`express-handlebars`);
-
-app.engine(`handlebars`, exphbs({defaultLayout: `main`}));
-app.set(`view engine`, `handlebars`);
-
-app.get(`/`, function (req, res) {
-    res.render(`index`, {layout: false});
-});
-
-mongoose.connect(`mongodb://localhost/scrape-scrape-news`, {useNewUrlParser: true});
+mongoose.connect(`mongodb://localhost/scrape-scrape-news`, { useNewUrlParser: true });
 
 app.get(`/scrape`, function(req, res) {
-    // let scrapeUrl = `http://www.gamasutra.com/`;
-    let scrapeUrl = `http://www.echojs.com/`;
-    axios.get(scrapeUrl).then(function(response) {
-        const $ = cheerio.load(response.data);
 
-        $("article h2").each(function(i, element) {
-        // $(`story_title`).each(function() {
-            let result = {};
+  axios.get(`http://www.echojs.com/`).then(function(response) {
 
-            result.headline = $(this)
-                .children(`a`)
-                .text();
-            result.url = $(this)
-                .children(`a`)
-                .attr(`href`)
+    var $ = cheerio.load(response.data);
 
-        db.article.create(result)
-            .then(function(articleDb) {
-                console.log(articleDb);
-            }).catch(function(err) {
-                returnes.json(err);
-            });
+    $(`article h2`).each(function() {
+
+      var result = {};
+
+      result.title = $(this)
+        .children(`a`)
+        .text();
+      result.link = $(this)
+        .children(`a`)
+        .attr(`href`);
+
+      db.Article.create(result)
+        .then(function(dbArticle) {
+          console.log(dbArticle);
+        })
+        .catch(function(err) {
+          return res.json(err);
         });
-        res.send(`Scrape successful`);
     });
+
+    res.send(`Scrape Complete`);
+  });
 });
 
 app.get(`/articles`, function(req, res) {
-    db.article.find({})
-        .then(function(articleDb) {
-            res.json(articleDb);
-        }).catch(function(err) {
-            res.json(err);
-        });
+
+  db.Article.find({})
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
 });
 
 app.get(`/articles/:id`, function(req, res) {
-    db.article.findOne({_id:req.params.id})
-        .populate(`note`)
-        .then(function (articleDb) {
-            res.json(articleDb);
-        }).catch(function(err) {
-            res.json(err);
-        });
+  db.Article.findOne({ _id: req.params.id })
+    .populate(`note`)
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
 });
 
 app.post(`/articles/:id`, function(req, res) {
-    db.note.create(req.body)
-        .then(function(noteDb) {
-            return db.article.findOneAndUpdate(
-                { _id: req.params.id },
-                { note: noteDb._id },
-                { new: true }
-            );
-        }).then(function(articleDb) {
-            res.json(articleDb);
-        }).catch(function(err) {
-            res.json(err);
-        });
+  db.Note.create(req.body)
+    .then(function(dbNote) {
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+    })
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
 });
 
+// Start the server
 app.listen(PORT, function() {
-    console.log(`http://localhost:${PORT}`);
+  console.log(`http://localhost:${PORT}`);
 });
-
