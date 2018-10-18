@@ -78,8 +78,6 @@ app.get(`/scrape`, function(req, res) {
           return res.json(err);
         });
     });
-
-    res.send('Scrape Complete');
   });
 });
 
@@ -111,7 +109,9 @@ app.post('/articles/:id', function(req, res) {
     .then(function(dbNote) {
       console.log('HIT 1')
       console.log(dbNote);
-      return db.Article.findOneAndUpdate(
+      console.log(req.params.id);
+      console.log(dbNote._id);
+      return models.Article.findOneAndUpdate(
         {
           _id: req.params.id
         },
@@ -121,7 +121,7 @@ app.post('/articles/:id', function(req, res) {
         {
           new: true
         }
-      )
+      );
     })
     .then(function(dbArticle) {
       console.log('HIT 2');
@@ -132,7 +132,6 @@ app.post('/articles/:id', function(req, res) {
     });
 });
 
-// Start the server
 app.listen(PORT, function() {
   console.log(`http://localhost:${PORT}`);
 });

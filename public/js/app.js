@@ -30,6 +30,7 @@ $(document).on('click', 'h2', function () {
             url: `/articles/${thisId}`
         })
         .then(function (data) {
+            console.log('HIT 5');
             console.log(data);
             $('#notes').append(`<h3>${data.title}</h3>`);
             $('#notes').append(`<h6>ID: ${data._id}</h6>`);
@@ -37,15 +38,20 @@ $(document).on('click', 'h2', function () {
             $('#notes').append('<textarea id="bodyinput" name="body"></textarea>');
             $('#notes').append(`<button data-id="${data._id}" id="savenote">Save Note</button>`);
 
+            console.log('HIT 4');
+            console.log(data.note);
             if (data.note) {
                 $('#titleinput').val(data.note.title);
+                console.log(data.note.title);
                 $('#bodyinput').val(data.note.body);
+                console.log(data.note.body);
             };
         });
 });
 
 $(document).on('click', '#savenote', function () {
     var thisId = $(this).attr('data-id');
+    console.log(`Note saved`);
     console.log(thisId);
 
     $.ajax({
@@ -57,6 +63,7 @@ $(document).on('click', '#savenote', function () {
             }
         })
         .then(function (data) {
+            console.log(`LINE 61`);
             console.log(data);
             $("#notes").empty();
         });
