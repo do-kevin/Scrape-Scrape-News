@@ -1,4 +1,7 @@
+$('#articles').hide();
+
 $('#scrape-btn').click(function () {
+    $('#articles').show();
     $.ajax({
         method: 'GET',
         url: '/scrape'
@@ -7,14 +10,13 @@ $('#scrape-btn').click(function () {
             $('#articles').empty();
             for (let i = 0; i < data.length; i++) {
                 $('#articles')
-                    .append(`<h2 data-id="${data[i]._id}">${data[i].title}</h2>`)
-                    .append(`<p>${data[i].summary}</p>`)
-                    .append(`<a href="${data[i].link}">${data[i].link}</a><br>`);
+                    .append(`<h2 class="display-4 animated flipInX" data-id="${data[i]._id}">${data[i].title}</h2>`)
+                    .append(`<p class="lead animated flipInX delay-2s">${data[i].summary}</p>`)
+                    .append(`<form action="${data[i].link}" target="_blank"> <input class="btn btn-primary animated zoomIn delay-2s" type="submit" value="Link"/></form><hr><br>`);
             };
         });
     });
 });
-
 
 
 $(document).on('click', 'h2', function () {
@@ -29,7 +31,7 @@ $(document).on('click', 'h2', function () {
         })
         .then(function (data) {
             console.log(data);
-            $('#notes').append(`<h2>${data.title}</h2>`);
+            $('#notes').append(`<h3>${data.title}</h3>`);
             $('#notes').append('<input id="titleinput" name="title">');
             $('#notes').append('<textarea id="bodyinput" name="body"></textarea>');
             $('#notes').append(`<button data-id="${data._id}" id="savenote">Save Note</button>`);
@@ -48,18 +50,14 @@ $(document).on('click', '#savenote', function () {
             method: 'POST',
             url: `/articles/${thisId}`,
             data: {
-                // Value taken from title input
-                title: $('#titleinput').val(),
-                // Value taken from note textarea
-                body: $('#bodyinput').val()
+                title: $("#titleinput").val(),
+                body: $("#bodyinput").val()
             }
         })
         .then(function (data) {
             console.log(data);
-            $('#notes').empty();
+            $("#notes").empty();
         });
-
-    // Also, remove the values entered in the input and textarea for note entry
-    $('#titleinput').val("");
-    $('#bodyinput').val("");
+    $("#titleinput").val("");
+    $("#bodyinput").val("");
 });
