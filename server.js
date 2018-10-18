@@ -1,4 +1,4 @@
-var express = require(`express`);
+var express = require('express');
 var logger = require(`morgan`);
 var mongoose = require(`mongoose`);
 var axios = require(`axios`);
@@ -42,9 +42,9 @@ db.once('open', function() {
     console.log('Mongoose connection successful');
 });
 
-app.get("/",function(req,res){
-    res.sendFile("index.html");
-});
+// app.get("/",function(req,res){
+//     res.sendFile("index.html");
+// });
 
 app.get(`/scrape`, function(req, res) {
   let scrapeUrl = `https://www.npr.org/`;
