@@ -109,6 +109,8 @@ app.get('/articles/:id', function(req, res) {
 app.post('/articles/:id', function(req, res) {
   models.Note.create(req.body)
     .then(function(dbNote) {
+      console.log('HIT 1')
+      console.log(dbNote);
       return db.Article.findOneAndUpdate(
         {
           _id: req.params.id
@@ -119,9 +121,10 @@ app.post('/articles/:id', function(req, res) {
         {
           new: true
         }
-      );
+      )
     })
     .then(function(dbArticle) {
+      console.log('HIT 2');
       res.json(dbArticle);
     })
     .catch(function(err) {

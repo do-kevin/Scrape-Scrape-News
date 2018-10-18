@@ -32,6 +32,7 @@ $(document).on('click', 'h2', function () {
         .then(function (data) {
             console.log(data);
             $('#notes').append(`<h3>${data.title}</h3>`);
+            $('#notes').append(`<h6>ID: ${data._id}</h6>`);
             $('#notes').append('<input id="titleinput" name="title">');
             $('#notes').append('<textarea id="bodyinput" name="body"></textarea>');
             $('#notes').append(`<button data-id="${data._id}" id="savenote">Save Note</button>`);
@@ -45,6 +46,7 @@ $(document).on('click', 'h2', function () {
 
 $(document).on('click', '#savenote', function () {
     var thisId = $(this).attr('data-id');
+    console.log(thisId);
 
     $.ajax({
             method: 'POST',
