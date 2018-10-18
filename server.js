@@ -131,5 +131,5 @@ app.post('/articles/:id', function(req, res) {
 
 // Start the server
 app.listen(PORT, function() {
-  console.log('http://localhost:${PORT}');
+  console.log(`http://localhost:${PORT}`);
 });
