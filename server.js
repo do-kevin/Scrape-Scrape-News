@@ -1,16 +1,16 @@
 var express = require('express');
-var logger = require(`morgan`);
-var mongoose = require(`mongoose`);
-var axios = require(`axios`);
-var cheerio = require(`cheerio`);
+var logger = require('morgan');
+var mongoose = require('mongoose');
+var axios = require('axios');
+var cheerio = require('cheerio');
 
-var models = require(`./models`);
+var models = require('./models');
 
 var PORT = process.env.PORT || 3000;
 
 var app = express();
 
-app.use(logger(`dev`));
+app.use(logger('dev'));
 
 app.use(
   express.urlencoded({
@@ -18,7 +18,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(express.static(`public`));
+app.use(express.static('public'));
 
 let databaseUri = "mongodb://localhost/scrape-scrape-news";
 
@@ -57,16 +57,16 @@ app.get(`/scrape`, function(req, res) {
       var result = {};
 
       result.title = $(element)
-        .children(`a`)
-        .find("h3")
+        .children('a')
+        .find('h3')
         .text();
       result.summary = $(element)
-        .children("a")
-        .find(`p.teaser`)
+        .children('a')
+        .find('p.teaser')
         .text();
       result.link = $(element)
-        .children(`a`)
-        .attr("href");
+        .children('a')
+        .attr('href');
 
       console.log(result);
 
@@ -79,11 +79,11 @@ app.get(`/scrape`, function(req, res) {
         });
     });
 
-    res.send(`Scrape Complete`);
+    res.send('Scrape Complete');
   });
 });
 
-app.get(`/articles`, function(req, res) {
+app.get('/articles', function(req, res) {
   models.Article.find({})
     .then(function(dbArticle) {
       res.json(dbArticle);
@@ -93,11 +93,11 @@ app.get(`/articles`, function(req, res) {
     });
 });
 
-app.get(`/articles/:id`, function(req, res) {
+app.get('/articles/:id', function(req, res) {
   models.Article.findOne({
     _id: req.params.id
   })
-    .populate(`note`)
+    .populate('note')
     .then(function(dbArticle) {
       res.json(dbArticle);
     })
@@ -106,7 +106,7 @@ app.get(`/articles/:id`, function(req, res) {
     });
 });
 
-app.post(`/articles/:id`, function(req, res) {
+app.post('/articles/:id', function(req, res) {
   models.Note.create(req.body)
     .then(function(dbNote) {
       return db.Article.findOneAndUpdate(
@@ -131,5 +131,5 @@ app.post(`/articles/:id`, function(req, res) {
 
 // Start the server
 app.listen(PORT, function() {
-  console.log(`http://localhost:${PORT}`);
+  console.log('http://localhost:${PORT}');
 });
