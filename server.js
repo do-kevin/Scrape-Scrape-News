@@ -132,6 +132,15 @@ app.post('/articles/:id', function(req, res) {
     });
 });
 
+app.delete('/articles/:id', function (req, res) {
+  console.log(`Article ID: ${req.params.id}`)
+  models.Note.findByIdAndDelete(req.params.id).then(function(response) {
+    // console.log(dbNote._id);
+    console.log(`hit hit hit`);
+    console.log(response);
+  });
+});
+
 app.listen(PORT, function() {
   console.log(`http://localhost:${PORT}`);
 });

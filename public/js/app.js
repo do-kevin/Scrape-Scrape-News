@@ -33,7 +33,7 @@ $(document).on('click', 'h2', function () {
             console.log('HIT 5');
             console.log(data);
             $('#notes').append(`<h3>${data.title}</h3>`);
-            $('#notes').append(`<h6>ID: ${data._id}</h6>`);
+            // $('#notes').append(`<h5>ID: ${data.note._id}</h5>`);
             $('#notes').append('<input id="titleinput" name="title">');
             $('#notes').append('<textarea id="bodyinput" name="body"></textarea>');
             $('#notes').append(`<button data-id="${data._id}" id="savenote">Save Note</button>`);
@@ -45,6 +45,8 @@ $(document).on('click', 'h2', function () {
                 console.log(data.note.title);
                 $('#bodyinput').val(data.note.body);
                 console.log(data.note.body);
+                // $('#notes').append(`<button data-id="${data._id}" id="deletenote">Delete Note</button>`);
+                $("#notes").append("<button data-id='" + data.note._id + "' id='deletenote' class='btn btn-danger btn-sm mt-2 ml-2'>Erase Note</button>");
             };
         });
 });
@@ -69,4 +71,26 @@ $(document).on('click', '#savenote', function () {
         });
     $("#titleinput").val("");
     $("#bodyinput").val("");
+});
+
+$(document).on('click', '#deletenote', function () {
+    var thisId = $(this).attr('data-id');
+    console.log(thisId);
+
+    $.ajax({
+            method: 'DELETE',
+            url: '/articles/' + thisId
+            // data: {
+            //     title: $("#titleinput").val(""),
+            //     body: $("#bodyinput").val("")
+            // }
+        })
+        .then(function (data) {
+            console.log(`hithit`);
+            console.log(data);
+            
+            console.log(`Note deleted. HIT`);
+            $("#notes").empty(); 
+        });
+     
 });
