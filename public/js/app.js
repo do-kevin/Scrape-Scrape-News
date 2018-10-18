@@ -22,6 +22,7 @@ $('#scrape-btn').click(function () {
 $(document).on('click', 'h2', function () {
 
     $('#notes').empty();
+    // $("#notes").show(); 
 
     var thisId = $(this).attr('data-id');
 
@@ -45,13 +46,13 @@ $(document).on('click', 'h2', function () {
                 console.log(data.note.title);
                 $('#bodyinput').val(data.note.body);
                 console.log(data.note.body);
-                // $('#notes').append(`<button data-id="${data._id}" id="deletenote">Delete Note</button>`);
-                $("#notes").append("<button data-id='" + data.note._id + "' id='deletenote' class='btn btn-danger btn-sm mt-2 ml-2'>Erase Note</button>");
+                $('#notes').append(`<button data-id="${data.note._id}" id="deletenote">Delete Note</button>`);
             };
         });
 });
 
 $(document).on('click', '#savenote', function () {
+    
     var thisId = $(this).attr('data-id');
     console.log(`Note saved`);
     console.log(thisId);
@@ -76,7 +77,7 @@ $(document).on('click', '#savenote', function () {
 $(document).on('click', '#deletenote', function () {
     var thisId = $(this).attr('data-id');
     console.log(thisId);
-
+    // $("#notes").hide(); 
     $.ajax({
             method: 'DELETE',
             url: '/articles/' + thisId
@@ -86,11 +87,15 @@ $(document).on('click', '#deletenote', function () {
             // }
         })
         .then(function (data) {
-            console.log(`hithit`);
             console.log(data);
+            // console.log(`hithit`);
+            // console.log(data);
             
-            console.log(`Note deleted. HIT`);
+            // console.log(`Note deleted. HIT`);
             $("#notes").empty(); 
+            
+        }).catch(function(err) {
+            console.log(err);
         });
      
 });

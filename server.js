@@ -137,6 +137,7 @@ app.delete('/articles/:id', function (req, res) {
   models.Note.findByIdAndDelete(req.params.id).then(function(response) {
     // console.log(dbNote._id);
     console.log(`hit hit hit`);
+    res.end(); // Expects a response back when spamming the delete btn 
     console.log(response);
   });
 });
